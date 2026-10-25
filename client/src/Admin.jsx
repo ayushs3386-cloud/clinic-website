@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
+import { API_URL } from './config'
 
-const API_URL = 'http://localhost:5000'
 const statuses = ['pending', 'confirmed', 'cancelled', 'completed']
 
 export default function Admin() {
