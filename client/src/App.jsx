@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import BookingForm from './BookingForm'
+import Admin from './Admin'
 const API_URL = 'http://localhost:5000'
 
-export default function App() {
+function Home() {
   const [services, setServices] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -51,4 +52,9 @@ export default function App() {
       </main>
     </div>
   )
+}
+
+export default function App() {
+  if (window.location.pathname === '/admin') return <Admin />
+  return <Home />
 }

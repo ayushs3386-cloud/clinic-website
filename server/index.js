@@ -15,44 +15,44 @@ app.get('/', (req, res) => res.json({ status: 'API running' }));
 
 // Public: list services
 app.get('/api/services', async (req, res) => {
-    try {
-        const { rows } = await pool.query(
-            'SELECT id, name, description, price_from FROM services WHERE is_active = TRUE ORDER BY id'
-        );
-        res.json(rows);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Server error' });
-    }
+  try {
+    const { rows } = await pool.query(
+      'SELECT id, name, description, price_from FROM services WHERE is_active = TRUE ORDER BY id'
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 // Public: submit appointment
 app.post('/api/appointments', async (req, res) => {
-    const { patient_name, phone, email, service, preferred_date, preferred_time, message } = req.body;
+  const { patient_name, phone, email, service, preferred_date, preferred_time, message } = req.body;
 
-    // Plain validation
-    if (!patient_name || patient_name.length < 2) {
-        return res.status(400).json({ error: 'Please enter your name' });
-    }
-    if (!phone || !/^[6-9]\d{9}$/.test(phone)) {
-        return res.status(400).json({ error: 'Enter a valid 10-digit mobile number' });
-    }
-    if (!service || !preferred_date || !preferred_time) {
-        return res.status(400).json({ error: 'Service, date and time are required' });
-    }
+  // Plain validation
+  if (!patient_name || patient_name.length < 2) {
+    return res.status(400).json({ error: 'Please enter your name' });
+  }
+  if (!phone || !/^[6-9]\d{9}$/.test(phone)) {
+    return res.status(400).json({ error: 'Enter a valid 10-digit mobile number' });
+  }
+  if (!service || !preferred_date || !preferred_time) {
+    return res.status(400).json({ error: 'Service, date and time are required' });
+  }
 
-    try {
-        const { rows } = await pool.query(
-            `INSERT INTO appointments
+  try {
+    const { rows } = await pool.query(
+      `INSERT INTO appointments
        (patient_name, phone, email, service, preferred_date, preferred_time, message)
        VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id`,
-            [patient_name, phone, email || null, service, preferred_date, preferred_time, message || null]
-        );
-        res.status(201).json({ success: true, id: rows[0].id });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Server error' });
-    }
+      [patient_name, phone, email || null, service, preferred_date, preferred_time, message || null]
+    );
+    res.status(201).json({ success: true, id: rows[0].id });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 app.post('/api/admin/login', async (req, res) => {
@@ -103,7 +103,10 @@ function authMiddleware(req, res, next) {
 app.get('/api/admin/appointments', authMiddleware, async (req, res) => {
   try {
     const { rows } = await pool.query(
-      'SELECT * FROM appointments ORDER BY created_at DESC'
+      `SELECT id, patient_name, phone, email, service,
+          to_char(preferred_date, 'YYYY-MM-DD') AS preferred_date,
+          preferred_time, message, status, created_at
+   FROM appointments ORDER BY created_at DESC`
     );
     res.json(rows);
   } catch (err) {
