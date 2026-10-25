@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-
+import BookingForm from './BookingForm'
 const API_URL = 'http://localhost:5000'
 
 export default function App() {
@@ -41,6 +41,12 @@ export default function App() {
               </p>
             </div>
           ))}
+        </div>
+        <h2 id="book" className="text-2xl font-semibold text-blue-900 mt-14 mb-6">
+          Book an Appointment
+        </h2>
+        <div className="max-w-xl">
+          <BookingForm services={services} apiUrl={API_URL} />
         </div>
       </main>
     </div>
