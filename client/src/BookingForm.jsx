@@ -1,5 +1,5 @@
 import { useState } from 'react'
-
+import { clinic } from './config'
 const times = [
     '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM',
     '04:00 PM', '05:00 PM', '06:00 PM',
@@ -20,6 +20,7 @@ export default function BookingForm({ services, apiUrl }) {
     const [submitting, setSubmitting] = useState(false)
     const [success, setSuccess] = useState(false)
     const [error, setError] = useState('')
+    const [booked, setBooked] = useState(null)
 
     const today = new Date().toISOString().split('T')[0]
 
@@ -45,6 +46,7 @@ export default function BookingForm({ services, apiUrl }) {
                 setError(data.error || 'Something went wrong')
             } else {
                 setSuccess(true)
+                setBooked(form)
                 setForm(emptyForm)
             }
         } catch (err) {
@@ -106,10 +108,21 @@ export default function BookingForm({ services, apiUrl }) {
             </div>
 
             {error && <p className="text-red-600">{error}</p>}
-            {success && (
-                <p className="text-green-700 bg-green-50 rounded-lg p-3">
-                    Thank you! Your request is received. We will call you to confirm.
-                </p>
+
+            {success && booked && (
+                <div className="text-green-700 bg-green-50 rounded-lg p-3 space-y-2">
+                    <p>Thank you! Your request is received. We will call you to confirm.</p>
+                    <a
+                        href={`https://wa.me/${clinic.whatsapp}?text=${encodeURIComponent(
+                            `Hello, I just booked an appointment.\nName: ${booked.patient_name}\nService: ${booked.service}\nDate: ${booked.preferred_date}\nTime: ${booked.preferred_time}`
+                        )}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-block bg-green-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-green-600"
+                    >
+                        Confirm via WhatsApp
+                    </a>
+                </div>
             )}
 
             <button

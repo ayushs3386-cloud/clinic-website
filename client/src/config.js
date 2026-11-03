@@ -6,8 +6,8 @@ export const clinic = {
     doctor: 'Dr. Priya Sharma',
     qualification: 'BDS, MDS (Orthodontics)',
     experience: '10+ years of experience',
-    phone: '9876543210',
-    whatsapp: '919876543210', // 91 + your 10-digit number, no + or spaces
+    phone: 'example number',
+    whatsapp: 'whatsapp number', // 91 + your 10-digit number, no + or spaces
     address: 'City Centre, Gwalior, Madhya Pradesh',
     hours: 'Mon-Sat: 10:00 AM - 7:00 PM',
 }

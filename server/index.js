@@ -5,10 +5,29 @@ const helmet = require('helmet');
 const pool = require('./db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const rateLimit = require('express-rate-limit');
 const app = express();
+app.set('trust proxy', 1);
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+
+// Booking: max 10 request per 15 minutes per IP
+const bookingLimiter = rateLimit({
+  windowsMS: 15 * 60 * 1000,
+  max: 10,
+  message: { error: 'Too many requests, Please try again later.' },
+
+});
+
+// Admin Login: max 5 attempts per 15 minutes per IP
+const loginLimiter = rateLimit({
+  windowsMS: 15 * 60 * 1000,
+  max: 5,
+  message: {
+    error: 'Too many login attempts, please try again in 15 minutes.'
+  },
+});
 
 // Health check
 app.get('/', (req, res) => res.json({ status: 'API running' }));
@@ -27,7 +46,7 @@ app.get('/api/services', async (req, res) => {
 });
 
 // Public: submit appointment
-app.post('/api/appointments', async (req, res) => {
+app.post('/api/appointments', bookingLimiter, async (req, res) => {
   const { patient_name, phone, email, service, preferred_date, preferred_time, message } = req.body;
 
   // Plain validation
@@ -55,7 +74,7 @@ app.post('/api/appointments', async (req, res) => {
   }
 });
 
-app.post('/api/admin/login', async (req, res) => {
+app.post('/api/admin/login', loginLimiter, async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
