@@ -1,9 +1,6 @@
 import { useState } from 'react'
 import { clinic } from './config'
-const times = [
-    '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM',
-    '04:00 PM', '05:00 PM', '06:00 PM',
-]
+
 
 export default function BookingForm({ services, apiUrl }) {
     const emptyForm = {
@@ -57,7 +54,7 @@ export default function BookingForm({ services, apiUrl }) {
     }
 
     const inputClass =
-        'w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
+        'w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500'
 
     return (
         <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow p-6 space-y-4">
@@ -95,7 +92,7 @@ export default function BookingForm({ services, apiUrl }) {
                     <label className="block mb-1 font-medium">Preferred time</label>
                     <select name="preferred_time" value={form.preferred_time} onChange={handleChange} className={inputClass} required>
                         <option value="">Select a time</option>
-                        {times.map((t) => (
+                        {clinic.times.map((t) => (
                             <option key={t} value={t}>{t}</option>
                         ))}
                     </select>
@@ -128,7 +125,7 @@ export default function BookingForm({ services, apiUrl }) {
             <button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-blue-700 text-white font-semibold py-3 rounded-lg hover:bg-blue-800 disabled:opacity-50"
+                className="w-full bg-brand-700 text-white font-semibold py-3 rounded-lg hover:bg-brand-800 disabled:opacity-50"
             >
                 {submitting ? 'Sending...' : 'Book Appointment'}
             </button>
