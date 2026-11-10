@@ -2,12 +2,20 @@ import { useState, useEffect } from 'react'
 import BookingForm from './BookingForm'
 import Admin from './Admin'
 import { API_URL, clinic } from './config'
-
+import { t } from './translations'
 function Home() {
+  
   const [services, setServices] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [lang, setLang] = useState(localStorage.getItem('lang') || 'en')
+const text = t[lang]
 
+function switchLang() {
+  const next = lang === 'en' ? 'hi' : 'en'
+  setLang(next)
+  localStorage.setItem('lang', next)
+}
   useEffect(() => {
     fetch(`${API_URL}/api/services`)
       .then((res) => {
@@ -30,10 +38,13 @@ function Home() {
         <div className="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
           <span className="font-bold text-blue-700">{clinic.name}</span>
           <div className="flex gap-4 text-sm">
-            <a href="#services" className="hover:text-blue-700">Services</a>
-            <a href="#about" className="hover:text-blue-700">Doctor</a>
-            <a href="#contact" className="hover:text-blue-700">Contact</a>
-            <a href="#book" className="bg-blue-700 text-white px-3 py-1 rounded-lg">Book</a>
+            <a href="#services" className="hover:text-blue-700">{text.services}</a>
+            <a href="#about" className="hover:text-blue-700">{text.doctor}</a>
+            <a href="#contact" className="hover:text-blue-700">{text.contact}</a>
+            <a href="#book" className="bg-blue-700 text-white px-3 py-1 rounded-lg">{text.book}</a>
+            <button onClick={switchLang} className="border border-blue-700 text-blue-700 px-2 py-1 rounded-lg">
+  {lang === 'en' ? 'हिंदी' : 'English'}
+</button>
           </div>
         </div>
       </nav>
@@ -46,22 +57,22 @@ function Home() {
           href="#book"
           className="inline-block mt-6 bg-white text-blue-700 font-semibold px-6 py-3 rounded-lg hover:bg-blue-50"
         >
-          Book an Appointment
+          {text.bookAppointment}
         </a>
       </header>
 
       <main className="max-w-5xl mx-auto px-4 py-12 space-y-16">
         {/* Services */}
         <section id="services">
-          <h2 className="text-2xl font-semibold text-blue-900 mb-6">Our Services</h2>
-          {loading && <p className="text-gray-600">Loading services...</p>}
+          <h2 className="text-2xl font-semibold text-blue-900 mb-6">{text.ourServices}</h2>
+          {loading && <p className="text-gray-600">{text.loading}</p>}
           {error && <p className="text-red-600">{error}</p>}
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((s) => (
               <div key={s.id} className="bg-white rounded-xl shadow p-6">
                 <h3 className="text-xl font-semibold text-blue-700">{s.name}</h3>
                 <p className="mt-2 text-gray-600">{s.description}</p>
-                <p className="mt-4 font-medium">Starting from ₹{s.price_from}</p>
+                <p className="mt-4 font-medium">{text.startingFrom} ₹{s.price_from}</p>
               </div>
             ))}
           </div>
@@ -84,12 +95,12 @@ function Home() {
 
         {/* Contact */}
         <section id="contact">
-          <h2 className="text-2xl font-semibold text-blue-900 mb-6">Visit Us</h2>
+          <h2 className="text-2xl font-semibold text-blue-900 mb-6">{text.visitUs}</h2>
           <div className="bg-white rounded-xl shadow p-6 space-y-2">
-            <p><strong>Address:</strong> {clinic.address}</p>
-            <p><strong>Hours:</strong> {clinic.hours}</p>
+            <p><strong>{text.address}:</strong> {clinic.address}</p>
+            <p><strong>{text.hours}:</strong> {clinic.hours}</p>
             <p>
-              <strong>Phone:</strong>{' '}
+              <strong>{text.phone}:</strong>{' '}
               <a href={`tel:${clinic.phone}`} className="text-blue-700">{clinic.phone}</a>
             </p>
             <a
@@ -98,14 +109,14 @@ function Home() {
               rel="noreferrer"
               className="inline-block mt-2 text-blue-700 underline"
             >
-              Get directions on Google Maps
+              {text.directions}
             </a>
           </div>
         </section>
 
         {/* Booking */}
         <section id="book">
-          <h2 className="text-2xl font-semibold text-blue-900 mb-6">Book an Appointment</h2>
+          <h2 className="text-2xl font-semibold text-blue-900 mb-6">{text.bookAppointment}</h2>
           <div className="max-w-xl">
             <BookingForm services={services} apiUrl={API_URL} />
           </div>
