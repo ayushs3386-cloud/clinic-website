@@ -9,6 +9,9 @@ export default function Admin() {
     const [password, setPassword] = useState('')
     const [appointments, setAppointments] = useState([])
     const [error, setError] = useState('')
+    const [search, setSearch] = useState('')
+    const [statusFilter, setStatusFilter] = useState('all')
+    const [todayOnly, setTodayOnly] = useState(false)
 
     function logout() {
         localStorage.removeItem('token')
@@ -72,6 +75,19 @@ export default function Admin() {
         loadAppointments()
     }
 
+    const today = new Date().toLocaleDateString('en-CA') // gives YYYY-MM-DD in local time
+
+const todayCount = appointments.filter((a) => a.preferred_date === today).length
+const pendingCount = appointments.filter((a) => a.status === 'pending').length
+
+const filtered = appointments.filter((a) => {
+  const q = search.toLowerCase()
+  const matchesSearch =
+    a.patient_name.toLowerCase().includes(q) || a.phone.includes(q)
+  const matchesStatus = statusFilter === 'all' || a.status === statusFilter
+  const matchesToday = !todayOnly || a.preferred_date === today
+  return matchesSearch && matchesStatus && matchesToday
+})
     if (!token) {
         return (
             <div className="min-h-screen bg-blue-50 flex items-center justify-center px-4">
@@ -109,6 +125,43 @@ export default function Admin() {
 
                 {error && <p className="text-red-600 mb-4">{error}</p>}
 
+                <div className="grid grid-cols-2 gap-4 mb-4">
+  <div className="bg-white rounded-xl shadow p-4">
+    <p className="text-sm text-gray-500">Today's appointments</p>
+    <p className="text-3xl font-bold text-blue-700">{todayCount}</p>
+  </div>
+  <div className="bg-white rounded-xl shadow p-4">
+    <p className="text-sm text-gray-500">Pending</p>
+    <p className="text-3xl font-bold text-orange-500">{pendingCount}</p>
+  </div>
+</div>
+
+<div className="flex flex-wrap gap-3 mb-4">
+  <input
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+    placeholder="Search name or phone"
+    className="border border-gray-300 rounded-lg px-3 py-2 flex-1 min-w-[200px]"
+  />
+  <select
+    value={statusFilter}
+    onChange={(e) => setStatusFilter(e.target.value)}
+    className="border border-gray-300 rounded-lg px-3 py-2"
+  >
+    <option value="all">All statuses</option>
+    {statuses.map((s) => (
+      <option key={s} value={s}>{s}</option>
+    ))}
+  </select>
+  <button
+    onClick={() => setTodayOnly(!todayOnly)}
+    className={`px-4 py-2 rounded-lg border ${
+      todayOnly ? 'bg-blue-700 text-white' : 'bg-white text-blue-700 border-blue-700'
+    }`}
+  >
+    Today only
+  </button>
+</div>
                 <div className="bg-white rounded-xl shadow overflow-x-auto">
                     <table className="w-full text-left text-sm">
                         <thead className="bg-blue-100 text-blue-900">
@@ -123,7 +176,7 @@ export default function Admin() {
                             </tr>
                         </thead>
                         <tbody>
-                            {appointments.map((a) => (
+                            {filtered.map((a) => (
                                 <tr key={a.id} className="border-t">
                                     <td className="p-3">{a.patient_name}</td>
                                     <td className="p-3">
@@ -150,7 +203,7 @@ export default function Admin() {
                             ))}
                         </tbody>
                     </table>
-                    {appointments.length === 0 && (
+                    {filtered.length === 0 && (
                         <p className="p-4 text-gray-500">No appointments yet.</p>
                     )}
                 </div>
