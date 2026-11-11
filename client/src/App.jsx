@@ -117,7 +117,7 @@ function Home() {
         <section id="book">
           <h2 className="text-2xl font-semibold text-brand-900 mb-6">{text.bookAppointment}</h2>
           <div className="max-w-xl">
-            <BookingForm services={services} apiUrl={API_URL} />
+            <BookingForm services={services} apiUrl={API_URL} text={text} />
           </div>
         </section>
       </main>
