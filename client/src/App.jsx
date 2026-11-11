@@ -10,6 +10,7 @@ function Home() {
   const [error, setError] = useState('')
   const [lang, setLang] = useState(localStorage.getItem('lang') || 'en')
   const text = t[lang]
+  const c = lang === 'hi' ? { ...clinic, ...clinic.hi } : clinic
 
   function switchLang() {
     const next = lang === 'en' ? 'hi' : 'en'
@@ -52,7 +53,7 @@ function Home() {
       {/* Hero */}
       <header className="bg-brand-700 text-white py-16 px-4 text-center">
         <h1 className="text-4xl font-bold">{clinic.name}</h1>
-        <p className="mt-3 text-lg text-brand-100">{clinic.tagline}</p>
+        <p className="mt-3 text-lg text-brand-100">{c.tagline}</p>
         <a
           href="#book"
           className="inline-block mt-6 bg-white text-brand-700 font-semibold px-6 py-3 rounded-lg hover:bg-brand-50"
@@ -85,9 +86,9 @@ function Home() {
           </div>
           <div>
             <h2 className="text-2xl font-semibold text-brand-900">{clinic.doctor}</h2>
-            <p className="text-brand-700">{clinic.qualification}</p>
+            <p className="text-brand-700">{c.qualification}</p>
             <p className="mt-2 text-gray-600">
-              {clinic.experience}. {clinic.about}
+              {c.experience}. {c.about}
             </p>
           </div>
         </section>
@@ -96,8 +97,8 @@ function Home() {
         <section id="contact">
           <h2 className="text-2xl font-semibold text-brand-900 mb-6">{text.visitUs}</h2>
           <div className="bg-white rounded-xl shadow p-6 space-y-2">
-            <p><strong>{text.address}:</strong> {clinic.address}</p>
-            <p><strong>{text.hours}:</strong> {clinic.hours}</p>
+            <p><strong>{text.address}:</strong> {c.address}</p>
+            <p><strong>{text.hours}:</strong> {c.hours}</p>
             <p>
               <strong>{text.phone}:</strong>{' '}
               <a href={`tel:${clinic.phone}`} className="text-brand-700">{clinic.phone}</a>
